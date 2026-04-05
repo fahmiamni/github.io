@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDR Dashboard — Ga-H178P | ZPEC Rig-29</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: #0c1425;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #38bdf8;
+            --accent2: #818cf8;
+            --positive: #34d399;
+            --negative: #f87171;
+            --warning: #fbbf24;
+            --border: #334155;
+            --gap: 16px;
+            --radius: 12px;
+            --color-1: #38bdf8;
+            --color-2: #818cf8;
+            --color-3: #34d399;
+            --color-4: #f87171;
+            --color-5: #fbbf24;
+            --color-6: #fb923c;
+            --color-7: #a78bfa;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: var(--gap);
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #0c1425 0%, #1a1a3e 100%);
+            padding: 24px 28px;
+            border-radius: var(--radius);
+            margin-bottom: var(--gap);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid var(--border);
+        }
+        .dashboard-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-info {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .header-info span { display: flex; align-items: center; gap: 6px; }
+        .header-info .label { color: var(--text-muted); }
+        .header-info .value { color: var(--text-primary); font-weight: 600; }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+        .kpi-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .kpi-card:nth-child(1)::before { background: var(--color-1); }
+        .kpi-card:nth-child(2)::before { background: var(--color-3); }
+        .kpi-card:nth-child(3)::before { background: var(--color-5); }
+        .kpi-card:nth-child(4)::before { background: var(--color-2); }
+        .kpi-card:nth-child(5)::before { background: var(--color-4); }
+        .kpi-card:nth-child(6)::before { background: var(--color-6); }
+        .kpi-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .kpi-sub.positive { color: var(--positive); }
+        .kpi-sub.negative { color: var(--negative); }
+        .kpi-sub.warning { color: var(--warning); }
+
+        /* Chart rows */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--gap);
+            margin-bottom: var(--gap);
+        }
+        .chart-row.three {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        .chart-row.full {
+            grid-template-columns: 1fr;
+        }
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+        }
+        .chart-container h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .chart-container canvas {
+            max-height: 300px;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Tables */
+        .table-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            margin-bottom: var(--gap);
+        }
+        .table-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .data-table thead th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            color: var(--text-secondary);
+        }
+        .data-table tbody tr:hover {
+            background: rgba(56,189,248,0.05);
+        }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-green { background: rgba(52,211,153,0.15); color: var(--positive); }
+        .badge-red { background: rgba(248,113,113,0.15); color: var(--negative); }
+        .badge-yellow { background: rgba(251,191,36,0.15); color: var(--warning); }
+        .badge-blue { background: rgba(56,189,248,0.15); color: var(--accent); }
+
+        /* Operations timeline */
+        .timeline { margin-top: 8px; }
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(51,65,85,0.3);
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-time {
+            min-width: 110px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .timeline-code {
+            min-width: 80px;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding-top: 2px;
+        }
+        .timeline-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding: 16px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Survey mini table */
+        .mini-table {
+            font-size: 12px;
+            width: 100%;
+        }
+        .mini-table th {
+            padding: 6px 8px;
+            text-align: right;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+        .mini-table td {
+            padding: 6px 8px;
+            text-align: right;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(51,65,85,0.3);
+        }
+        .mini-table td:first-child, .mini-table th:first-child {
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .chart-row, .chart-row.three { grid-template-columns: 1fr; }
+            .kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .header-info { flex-direction: column; gap: 6px; }
+        }
+        @media print {
+            body { background: #fff; color: #000; }
+            .kpi-card, .chart-container, .table-section { border: 1px solid #ddd; background: #fff; }
+            .dashboard-header { background: #f5f5f5; }
+            .dashboard-header h1 { background: none; -webkit-text-fill-color: #000; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- HEADER -->
+    <header class="dashboard-header">
+        <div>
+            <h1>Garraf — Daily Drilling Report #41</h1>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Well Ga-H178P &bull; ZPEC Rig-29 &bull; WPH, Slot #7</div>
+        </div>
+        <div class="header-info">
+            <span><span class="label">Report Date:</span> <span class="value">3 Apr 2026</span></span>
+            <span><span class="label">Spud Date:</span> <span class="value">22 Feb 2026</span></span>
+            <span><span class="label">Days Since Spud:</span> <span class="value">40</span></span>
+            <span><span class="label">Days on Location:</span> <span class="value">374</span></span>
+        </div>
+    </header>
+
+    <!-- KPI ROW -->
+    <section class="kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-label">Current Depth (MD)</div>
+            <div class="kpi-value">3,944 m</div>
+            <div class="kpi-sub positive">+222 m in 24 hrs</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Current TVD</div>
+            <div class="kpi-value">2,419 m</div>
+            <div class="kpi-sub">Inc: 45.68° | Azi: 196.78°</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Avg ROP (24hr)</div>
+            <div class="kpi-value">14.4 m/hr</div>
+            <div class="kpi-sub positive">Strong performance</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Schedule Variance</div>
+            <div class="kpi-value" style="color:var(--positive)">+9.32 days</div>
+            <div class="kpi-sub positive">Ahead of plan</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Cumulative Cost</div>
+            <div class="kpi-value">$4.84M</div>
+            <div class="kpi-sub">US Dollars</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">LTI-Free Days</div>
+            <div class="kpi-value" style="color:var(--positive)">338.5</div>
+            <div class="kpi-sub positive">Zero incidents</div>
+        </div>
+    </section>
+
+    <!-- DEPTH & FORMATION CHARTS -->
+    <div class="section-title">Drilling Progress & Formation</div>
+    <section class="chart-row">
+        <div class="chart-container">
+            <h3>Depth vs Plan by Formation</h3>
+            <canvas id="depthChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>Formation Thickness Profile</h3>
+            <canvas id="formationChart"></canvas>
+        </div>
+    </section>
+
+    <!-- BIT PERFORMANCE & NPT -->
+    <div class="section-title">Bit Performance & Non-Productive Time</div>
+    <section class="chart-row">
+        <div class="chart-container">
+            <h3>Bit Record — Meterage & ROP</h3>
+            <canvas id="bitChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>NPT Breakdown (Cumulative Well)</h3>
+            <canvas id="nptChart"></canvas>
+        </div>
+    </section>
+
+    <!-- MUD & HSE -->
+    <div class="section-title">Mud Properties & HSE</div>
+    <section class="chart-row">
+        <div class="chart-container">
+            <h3>Mud Properties (KCL Polymer)</h3>
+            <canvas id="mudChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h3>POB & STOP Card Participation</h3>
+            <canvas id="pobChart"></canvas>
+        </div>
+    </section>
+
+    <!-- SURVEY TABLE -->
+    <div class="section-title">Directional Surveys</div>
+    <div class="table-section">
+        <h3>Latest Survey Data</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>MD (m)</th>
+                    <th>Inc (°)</th>
+                    <th>Azi (°)</th>
+                    <th>TVD (m)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>3,741.82</td><td>43.43</td><td>196.04</td><td>2,296.68</td></tr>
+                <tr><td>2</td><td>3,770.23</td><td>43.93</td><td>195.90</td><td>2,317.23</td></tr>
+                <tr><td>3</td><td>3,798.49</td><td>44.22</td><td>196.41</td><td>2,337.53</td></tr>
+                <tr><td>4</td><td>3,827.62</td><td>44.87</td><td>196.81</td><td>2,358.29</td></tr>
+                <tr><td>5</td><td>3,856.07</td><td>45.28</td><td>196.61</td><td>2,378.39</td></tr>
+                <tr><td>6</td><td>3,885.04</td><td>45.59</td><td>196.63</td><td>2,398.71</td></tr>
+                <tr><td>7</td><td>3,913.43</td><td>45.68</td><td>196.78</td><td>2,418.57</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- BIT RECORD TABLE -->
+    <div class="table-section">
+        <h3>Bit Record Summary</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Bit #</th>
+                    <th>Size</th>
+                    <th>Make</th>
+                    <th>Type</th>
+                    <th>Depth In (m)</th>
+                    <th>Depth Out (m)</th>
+                    <th>Drilled (m)</th>
+                    <th>Hours</th>
+                    <th>Avg ROP (m/hr)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>5RR</td><td>26"</td><td>GREAT</td><td>PDC</td><td>32</td><td>298</td><td>266</td><td>16.6</td><td>16.0</td>
+                    <td><span class="badge badge-green">TD</span></td>
+                </tr>
+                <tr>
+                    <td>2</td><td>17.5"</td><td>NOV</td><td>PDC</td><td>298</td><td>1,775</td><td>1,477</td><td>104.3</td><td>14.2</td>
+                    <td><span class="badge badge-blue">BHA</span></td>
+                </tr>
+                <tr>
+                    <td>3</td><td>17.5"</td><td>NOV</td><td>PDC</td><td>1,775</td><td>1,850</td><td>75</td><td>8.8</td><td>8.5</td>
+                    <td><span class="badge badge-yellow">DFT</span></td>
+                </tr>
+                <tr>
+                    <td>3RR</td><td>17.5"</td><td>NOV</td><td>PDC</td><td>1,850</td><td>2,302</td><td>452</td><td>38.5</td><td>11.8</td>
+                    <td><span class="badge badge-green">TD</span></td>
+                </tr>
+                <tr>
+                    <td>5</td><td>12.25"</td><td>Hal</td><td>PDC</td><td>2,302</td><td>3,555</td><td>1,253</td><td>101.8</td><td>12.3</td>
+                    <td><span class="badge badge-blue">BHA</span></td>
+                </tr>
+                <tr>
+                    <td>7RR</td><td>8.5"</td><td>Hal</td><td>PDC</td><td>3,722</td><td>—</td><td>222</td><td>15.4</td><td>14.4</td>
+                    <td><span class="badge badge-yellow">IN HOLE</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- OPERATIONS TIMELINE -->
+    <div class="section-title">24-Hour Operations Timeline</div>
+    <div class="table-section">
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-time">00:00 — 03:00</div>
+                <div class="timeline-code"><span class="badge badge-yellow">DFAL/PIPE</span></div>
+                <div class="timeline-desc">Continued RIH with 8-1/2" Directional BHA from 2740m to bottom at 3722m, precautionary reamed down last stand.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-time">03:00 — 00:00</div>
+                <div class="timeline-code"><span class="badge badge-green">DRLG</span></div>
+                <div class="timeline-desc">Drilled 8-1/2" Directional Hole in rotary mode F/3722m T/3944m. Pumped bridging pill each stand drilled and added H2S scavenger to active system. <br><strong>Params:</strong> FR: 550-600 gpm, SPP: 2650-3150 psi, WOB: 3-12 Klbs, RPM 40-60, TQ: 25-30 Kft-lbs. Avg ROP: 14.4 m/hr.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NEXT 72 HRS -->
+    <div class="section-title">72-Hour Lookahead</div>
+    <div class="table-section" style="border-left: 3px solid var(--accent);">
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+            <strong style="color:var(--accent);">1.</strong> Continue drilling 8-1/2" hole section to well TD @ <strong>3,966m</strong> (22m remaining)<br>
+            <strong style="color:var(--accent);">2.</strong> Sweep and circulate hole clean<br>
+            <strong style="color:var(--accent);">3.</strong> Perform wiper trip to 9-5/8" casing shoe and RIH back to bottom<br>
+            <strong style="color:var(--accent);">4.</strong> POOH 8-1/2" Dir. BHA to surface and L/D same<br>
+            <strong style="color:var(--accent);">5.</strong> Run Wireline Log / PCL (GR-RES-NEUT-DEN-CAL-Sonic-SP)<br>
+            <strong style="color:var(--accent);">6.</strong> Run 9-5/8" casing cement bond log — main & repeat passes<br>
+            <strong style="color:var(--accent);">7.</strong> Run 9-5/8" Rotating Casing Scraper BHA to scrape LH setting depth
+        </div>
+    </div>
+
+    <footer class="dashboard-footer">
+        DDR Dashboard — Ga-H178P / ZPEC Rig-29 / Garraf Oilfield &bull; Report #41 &bull; Data as of 3 April 2026
+    </footer>
+</div>
+
+<script>
+const COLORS = ['#38bdf8','#818cf8','#34d399','#f87171','#fbbf24','#fb923c','#a78bfa','#f472b6','#2dd4bf','#e879f9'];
+
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(51,65,85,0.4)';
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+// ========== DEPTH vs PLAN CHART ==========
+(function() {
+    const formations = ['Shiranish','Hartha','Sadi','Tanuma','Khasib','U1','U2','Marl','M1','M2','L1.1','L1.2','L2'];
+    const planned =    [2708, 2993, 3306, 3573, 3636, 3700, 3738, 3784, 3791, 3808, 3812, 3830, 3879, 3972];
+    const actual =     [2702, 2996, 3312, 3572, 3635, 3701, 3736, 3786, 3798, 3815, 3818, 3835, 3882, null];
+
+    const ctx = document.getElementById('depthChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [...formations, 'TD'],
+            datasets: [
+                {
+                    label: 'Plan (m MDDF)',
+                    data: planned,
+                    borderColor: '#818cf8',
+                    backgroundColor: '#818cf820',
+                    borderWidth: 2,
+                    borderDash: [6,3],
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    tension: 0.2,
+                    fill: false
+                },
+                {
+                    label: 'Actual (m MDDF)',
+                    data: actual,
+                    borderColor: '#38bdf8',
+                    backgroundColor: '#38bdf820',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.2,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', labels: { usePointStyle: true, padding: 16 }},
+                tooltip: {
+                    callbacks: {
+                        label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y ? ctx.parsed.y.toLocaleString() + ' m' : 'N/A'}`
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    reverse: true,
+                    title: { display: true, text: 'Depth (m MDDF)', color: '#64748b' },
+                    ticks: { callback: v => v.toLocaleString() },
+                    grid: { color: 'rgba(51,65,85,0.3)' }
+                },
+                x: {
+                    ticks: { maxRotation: 45, font: { size: 11 }},
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+})();
+
+// ========== FORMATION THICKNESS ==========
+(function() {
+    const formations = ['Shiranish','Hartha','Sadi','Tanuma','Khasib','U1','U2','Marl','M1','M2','L1.1','L1.2','L2'];
+    const thickness =  [294.3, 315.7, 260, 63, 66, 35, 50, 12, 17, 3, 17, 47, 93.3];
+
+    const ctx = document.getElementById('formationChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: formations,
+            datasets: [{
+                label: 'Thickness (m)',
+                data: thickness,
+                backgroundColor: formations.map((_, i) => COLORS[i % COLORS.length] + 'BB'),
+                borderColor: formations.map((_, i) => COLORS[i % COLORS.length]),
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: { label: ctx => `${ctx.parsed.x.toFixed(1)} m` }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Thickness (m)', color: '#64748b' },
+                    grid: { color: 'rgba(51,65,85,0.3)' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { size: 11 }}
+                }
+            }
+        }
+    });
+})();
+
+// ========== BIT RECORD CHART ==========
+(function() {
+    const bits = ['5RR (26")', '2 (17.5")', '3 (17.5")', '3RR (17.5")', '5 (12.25")', '7RR (8.5")'];
+    const meterage = [266, 1477, 75, 452, 1253, 222];
+    const rop = [16.0, 14.2, 8.5, 11.8, 12.3, 14.4];
+
+    const ctx = document.getElementById('bitChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: bits,
+            datasets: [
+                {
+                    label: 'Meterage (m)',
+                    data: meterage,
+                    backgroundColor: '#38bdf8AA',
+                    borderColor: '#38bdf8',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Avg ROP (m/hr)',
+                    data: rop,
+                    type: 'line',
+                    borderColor: '#f87171',
+                    backgroundColor: '#f8717140',
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#f87171',
+                    pointBorderColor: '#1e293b',
+                    pointBorderWidth: 2,
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', labels: { usePointStyle: true, padding: 16 }},
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            if (ctx.dataset.label.includes('ROP')) return `ROP: ${ctx.parsed.y} m/hr`;
+                            return `Drilled: ${ctx.parsed.y.toLocaleString()} m`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    position: 'left',
+                    title: { display: true, text: 'Meterage (m)', color: '#38bdf8' },
+                    grid: { color: 'rgba(51,65,85,0.3)' },
+                    ticks: { color: '#38bdf8' }
+                },
+                y1: {
+                    position: 'right',
+                    title: { display: true, text: 'ROP (m/hr)', color: '#f87171' },
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: '#f87171' },
+                    min: 0, max: 20
+                },
+                x: { grid: { display: false }}
+            }
+        }
+    });
+})();
+
+// ========== NPT BREAKDOWN ==========
+(function() {
+    const labels = ['DFAL (Downhole Failure)', 'WAIT', 'SFAL (Surface Failure)'];
+    const values = [45.25, 2.25, 2.0];
+
+    const ctx = document.getElementById('nptChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: ['#f87171CC', '#fbbf24CC', '#fb923cCC'],
+                borderColor: '#1e293b',
+                borderWidth: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, padding: 12, color: '#94a3b8', font: { size: 12 }}
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const total = ctx.dataset.data.reduce((a,b)=>a+b, 0);
+                            const pct = ((ctx.parsed / total) * 100).toFixed(1);
+                            return `${ctx.label}: ${ctx.parsed} hrs (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'centerText',
+            afterDraw(chart) {
+                const {ctx, chartArea: {width, height, top}} = chart;
+                ctx.save();
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = 'bold 28px -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('49.5h', width/2 + chart.chartArea.left/2 + 10, top + height/2 - 10);
+                ctx.font = '12px -apple-system, sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('Total NPT', width/2 + chart.chartArea.left/2 + 10, top + height/2 + 14);
+                ctx.restore();
+            }
+        }]
+    });
+})();
+
+// ========== MUD PROPERTIES ==========
+(function() {
+    const props = ['MW\n(ppg)', 'FV\n(s)', 'PV\n(cps)', 'YP\n(lb/100ft²)', 'API FL\n(ml/30m)', 'pH', 'MBT'];
+    const values = [10.4, 52, 18, 16, 4.4, 9.5, 5];
+    const mins =   [10.4, 0,  0,  15, 0,   9.0, 0];
+    const maxs =   [10.7, 999, 25, 20, 5,  9.5, 12.5];
+
+    // Normalize to percentage of acceptable range
+    const normalized = values.map((v, i) => {
+        if (maxs[i] === 999) return 80; // FV doesn't have a strict max
+        const range = maxs[i] - mins[i];
+        if (range === 0) return 100;
+        return Math.min(100, Math.max(0, ((v - mins[i]) / range) * 100));
+    });
+
+    const barColors = normalized.map(n => {
+        if (n >= 0 && n <= 100) return '#34d399CC';
+        return '#f87171CC';
+    });
+
+    const ctx = document.getElementById('mudChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['MW (ppg)', 'FV (s)', 'PV (cps)', 'YP (lb/100ft²)', 'API FL (ml)', 'pH', 'MBT'],
+            datasets: [{
+                label: 'Measured Value',
+                data: values,
+                backgroundColor: ['#34d399CC','#38bdf8CC','#34d399CC','#34d399CC','#34d399CC','#34d399CC','#34d399CC'],
+                borderColor: ['#34d399','#38bdf8','#34d399','#34d399','#34d399','#34d399','#34d399'],
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        afterLabel: (ctx) => {
+                            const ranges = ['10.4-10.7','ALAP','<25','15-20','<5','9.0-9.5','<12.5'];
+                            return `Spec: ${ranges[ctx.dataIndex]}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: { grid: { color: 'rgba(51,65,85,0.3)' }},
+                x: { grid: { display: false }, ticks: { font: { size: 11 }}}
+            }
+        }
+    });
+})();
+
+// ========== POB & STOP CARDS ==========
+(function() {
+    const companies = ['ZPEC Crew', 'SAM', 'Qemit', 'TOC', 'Other', 'EGC', 'PCIHBV'];
+    const pob =       [86, 25, 13, 8, 7, 6, 3];
+
+    const ctx = document.getElementById('pobChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: companies,
+            datasets: [{
+                data: pob,
+                backgroundColor: COLORS.slice(0, companies.length).map(c => c + 'CC'),
+                borderColor: '#1e293b',
+                borderWidth: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: { usePointStyle: true, padding: 10, color: '#94a3b8', font: { size: 11 }}
+                },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => {
+                            const total = ctx.dataset.data.reduce((a,b)=>a+b, 0);
+                            const pct = ((ctx.parsed / total) * 100).toFixed(1);
+                            return `${ctx.label}: ${ctx.parsed} pax (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'centerPOB',
+            afterDraw(chart) {
+                const {ctx, chartArea: {width, height, top, left}} = chart;
+                ctx.save();
+                const cx = left + width * 0.38;
+                const cy = top + height / 2;
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = 'bold 28px -apple-system, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('148', cx, cy - 10);
+                ctx.font = '11px -apple-system, sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('Total POB', cx, cy + 12);
+                ctx.restore();
+            }
+        }]
+    });
+})();
+</script>
+</body>
+</html>
