@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fambopenclaw — Hub</title>
+  <meta name="description" content="fambopenclaw auto website — dashboards and reports" />
+  <style>
+    :root {
+      --dark:   #0f1b2d;
+      --blue:   #0032A0;
+      --light:  #e8edf5;
+      --mid:    #c5d0e6;
+      --green:  #1a7a4a;
+      --amber:  #d4820a;
+      --red:    #c0392b;
+      --purple: #6b21a8;
+      --text:   #1a1a2e;
+      --muted:  #5a6a7a;
+      --oc:     #ff6b35;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Calibri', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--dark);
+      background-image: linear-gradient(135deg, #0f1b2d 0%, #1a2f4e 100%);
+      color: #fff;
+      padding: 40px 40px 36px;
+      border-bottom: 4px solid var(--blue);
+    }
+    .header-top {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .badge {
+      background: var(--blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-meta {
+      font-size: 13px;
+      color: var(--mid);
+      margin-top: 6px;
+    }
+
+    /* ── Body ── */
+    .body {
+      padding: 36px 40px 60px;
+      max-width: 1100px;
+    }
+
+    /* ── Category Section ── */
+    .category {
+      margin-bottom: 44px;
+    }
+
+    .cat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--mid);
+    }
+    .cat-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .cat-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--dark);
+    }
+    .cat-count {
+      margin-left: auto;
+      background: var(--mid);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── Dashboard Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 22px 24px 20px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.08);
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 5px solid var(--blue);
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,.13);
+      transform: translateY(-2px);
+    }
+    .card.accent-green  { border-left-color: var(--green); }
+    .card.accent-amber  { border-left-color: var(--amber); }
+    .card.accent-red    { border-left-color: var(--red); }
+    .card.accent-purple { border-left-color: var(--purple); }
+    .card.accent-oc     { border-left-color: var(--oc); }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+    .card-tag {
+      margin-top: auto;
+      padding-top: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--blue);
+    }
+    .card.accent-green  .card-tag { color: var(--green); }
+    .card.accent-amber  .card-tag { color: var(--amber); }
+    .card.accent-red    .card-tag { color: var(--red); }
+    .card.accent-purple .card-tag { color: var(--purple); }
+    .card.accent-oc     .card-tag { color: var(--oc); }
+
+    /* ── About Section ── */
+    .about {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.08);
+      border-left: 5px solid var(--muted);
+      max-width: 600px;
+    }
+    .about h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .about p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 24px 40px;
+      border-top: 1px solid var(--mid);
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 28px 24px 22px; }
+      .body   { padding: 24px 24px 40px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .footer { padding: 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <div class="header">
+    <div class="header-top">
+      <span class="badge">OpenClaw</span>
+      <h1>fambopenclaw-hash.github.io</h1>
+    </div>
+    <div class="header-meta">Auto-generated dashboards &amp; reports — powered by OpenClaw 🦉</div>
+  </div>
+
+  <!-- ── Main ── -->
+  <div class="body">
+
+    <!-- ═══ OIL & GAS ═══ -->
+    <div class="category">
+      <div class="cat-header">
+        <span class="cat-icon">🛢️</span>
+        <span class="cat-title">Oil &amp; Gas</span>
+        <span class="cat-count">4 reports</span>
+      </div>
+      <div class="card-grid">
+        <a class="card accent-green" href="iraq_2026_growth.html">
+          <div class="card-title">Iraq 2026 Growth Opportunities</div>
+          <div class="card-desc">26 oil &amp; gas fields/blocks — full asset register with reserves, production rates, operators, pipeline distances, and PCIHBV assessments.</div>
+          <div class="card-tag">Oil &amp; Gas</div>
+        </a>
+        <a class="card accent-green" href="petronas_top5_analysis.html">
+          <div class="card-title">Petronas Iraq — Top 5 Field Recommendations</div>
+          <div class="card-desc">Detailed analysis for Petronas Carigali: Nasiriyah, Subba, Akkas, Haifa &amp; Ballad scored on HC evacuation, security, energy demand, HC volume, and H2S risk.</div>
+          <div class="card-tag">Strategic Analysis</div>
+        </a>
+        <a class="card accent-amber" href="Test_Well_Dashboard.html">
+          <div class="card-title">Test — Well Dashboard</div>
+          <div class="card-desc">Well-by-well performance metrics and overview.</div>
+          <div class="card-tag">Well Dashboard</div>
+        </a>
+        <a class="card" href="Sample1.html">
+          <div class="card-title">Subsurface Operational Dashboard</div>
+          <div class="card-desc">Personnel-on-board (POB) counts, slickline, e-line, WHPM &amp; CTU activity summaries.</div>
+          <div class="card-tag">Operational</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══ DRILLING & REPORTS ═══ -->
+    <div class="category">
+      <div class="cat-header">
+        <span class="cat-icon">📋</span>
+        <span class="cat-title">Drilling &amp; Reports</span>
+        <span class="cat-count">4 reports</span>
+      </div>
+      <div class="card-grid">
+        <a class="card accent-green" href="DMR11_Ga-C185P_ZPEC.html">
+          <div class="card-title">DMR 11 — Ga-C185P (ZPEC-29)</div>
+          <div class="card-desc">Daily Move Report for Rig ZPEC-29 at WPC Slot #16, Garraf Oilfield. Rig move from WPH to WPC — 03 May 2026.</div>
+          <div class="card-tag">DMR Report</div>
+        </a>
+        <a class="card accent-amber" href="Test_Daily_Update.html">
+          <div class="card-title">Test — Daily Update</div>
+          <div class="card-desc">Daily operational summary and status highlights.</div>
+          <div class="card-tag">Daily Update</div>
+        </a>
+        <a class="card accent-green" href="Sample2.html">
+          <div class="card-title">Sample 2</div>
+          <div class="card-desc">Additional dashboard or report. Click to view.</div>
+          <div class="card-tag">Report</div>
+        </a>
+        <a class="card accent-green" href="Tamilarasan_Employment_Details.html">
+          <div class="card-title">Tamilarasan — Employment Details</div>
+          <div class="card-desc">Letter of Appointment as Event Director at XR-Summits Sdn Bhd. Covers salary, commission, leave, benefits, notice period &amp; obligations.</div>
+          <div class="card-tag">HR Document</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══ AI & GITHUB STATS ═══ -->
+    <div class="category">
+      <div class="cat-header">
+        <span class="cat-icon">🤖</span>
+        <span class="cat-title">AI &amp; GitHub Stats</span>
+        <span class="cat-count">3 reports</span>
+      </div>
+      <div class="card-grid">
+        <a class="card accent-oc" href="hermes_agent_vs_openclaw.html">
+          <div class="card-title">Hermes Agent vs OpenClaw — AI Agent Stars</div>
+          <div class="card-desc">Live GitHub comparison: OpenClaw (369K ★) vs Hermes Agent/NousResearch (138K ★) — bar charts, donut, growth rate, and full metrics table.</div>
+          <div class="card-tag">AI Agents</div>
+        </a>
+        <a class="card accent-oc" href="hermes_agent_vs_openclaw_growth.html">
+          <div class="card-title">Star Growth Trajectory — Chart</div>
+          <div class="card-desc">Cumulative growth curves from inception: OpenClaw vs Hermes Agent — modeled star trajectory, milestone timeline, and growth rate analysis.</div>
+          <div class="card-tag">Growth Chart</div>
+        </a>
+        <a class="card" href="telegram-message-info.html">
+          <div class="card-title">Telegram Message Info</div>
+          <div class="card-desc">Message metadata breakdown — sender, chat type, channel capabilities, and inbound schema details.</div>
+          <div class="card-tag">Metadata</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── About ── -->
+    <div class="about">
+      <h2>About This Site</h2>
+      <p>This site is automatically maintained by <strong>OpenClaw</strong> 🦉. Reports and dashboards are generated on demand and published here. Categories are auto-grouped. To improve this page, edit <code>index.html</code> in the repository.</p>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    fambopenclaw-hash.github.io &mdash; OpenClaw Auto Website &mdash;
+    <a href="https://github.com/fambopenclaw-hash/fambopenclaw-hash.github.io" style="color:var(--blue);">View on GitHub</a>
+  </div>
+
+</body>
+</html>
