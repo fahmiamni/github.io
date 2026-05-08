@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fambopenclaw — Hub</title>
-  <meta name="description" content="fambopenclaw auto website — dashboards and reports" />
+  <title>fambopenclaw - Hub List</title>
+  <meta name="description" content="fambopenclaw auto website - dashboards and reports" />
   <style>
     :root {
       --dark:   #0f1b2d;
@@ -29,7 +29,6 @@
       min-height: 100vh;
     }
 
-    /* ── Header ── */
     .header {
       background: var(--dark);
       background-image: linear-gradient(135deg, #0f1b2d 0%, #1a2f4e 100%);
@@ -64,13 +63,11 @@
       margin-top: 6px;
     }
 
-    /* ── Body ── */
     .body {
       padding: 36px 40px 60px;
-      max-width: 1100px;
+      max-width: 980px;
     }
 
-    /* ── Category Section ── */
     .category {
       margin-bottom: 44px;
     }
@@ -79,7 +76,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       padding-bottom: 10px;
       border-bottom: 2px solid var(--mid);
     }
@@ -104,66 +101,83 @@
       border-radius: 20px;
     }
 
-    /* ── Dashboard Cards ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
+    .link-list {
+      list-style: none;
       background: #fff;
-      border-radius: 12px;
-      padding: 22px 24px 20px;
-      box-shadow: 0 1px 5px rgba(0,0,0,.08);
-      text-decoration: none;
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-left: 5px solid var(--blue);
-      transition: box-shadow 0.2s, transform 0.15s;
+      border: 1px solid var(--mid);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 5px rgba(0,0,0,.06);
     }
-    .card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,.13);
-      transform: translateY(-2px);
-    }
-    .card.accent-green  { border-left-color: var(--green); }
-    .card.accent-amber  { border-left-color: var(--amber); }
-    .card.accent-red    { border-left-color: var(--red); }
-    .card.accent-purple { border-left-color: var(--purple); }
-    .card.accent-oc     { border-left-color: var(--oc); }
 
-    .card-title {
+    .link-list li + li {
+      border-top: 1px solid var(--mid);
+    }
+
+    .list-link {
+      color: var(--text);
+      display: grid;
+      grid-template-columns: 8px minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 20px 15px 0;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .list-link:hover {
+      background: #f8fafc;
+    }
+
+    .list-link::before {
+      content: "";
+      align-self: stretch;
+      background: var(--blue);
+    }
+
+    .list-link.accent-green::before  { background: var(--green); }
+    .list-link.accent-amber::before  { background: var(--amber); }
+    .list-link.accent-red::before    { background: var(--red); }
+    .list-link.accent-purple::before { background: var(--purple); }
+    .list-link.accent-oc::before     { background: var(--oc); }
+
+    .link-main {
+      min-width: 0;
+    }
+
+    .link-title {
+      display: block;
       font-size: 15px;
       font-weight: 700;
       color: var(--dark);
+      margin-bottom: 4px;
     }
-    .card-desc {
+
+    .link-desc {
+      display: block;
       font-size: 13px;
       color: var(--muted);
-      line-height: 1.55;
-      flex: 1;
+      line-height: 1.45;
     }
-    .card-tag {
-      margin-top: auto;
-      padding-top: 10px;
+
+    .link-tag {
+      color: var(--blue);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.8px;
       text-transform: uppercase;
-      color: var(--blue);
+      white-space: nowrap;
     }
-    .card.accent-green  .card-tag { color: var(--green); }
-    .card.accent-amber  .card-tag { color: var(--amber); }
-    .card.accent-red    .card-tag { color: var(--red); }
-    .card.accent-purple .card-tag { color: var(--purple); }
-    .card.accent-oc     .card-tag { color: var(--oc); }
 
-    /* ── About Section ── */
+    .list-link.accent-green  .link-tag { color: var(--green); }
+    .list-link.accent-amber  .link-tag { color: var(--amber); }
+    .list-link.accent-red    .link-tag { color: var(--red); }
+    .list-link.accent-purple .link-tag { color: var(--purple); }
+    .list-link.accent-oc     .link-tag { color: var(--oc); }
+
     .about {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 24px 28px;
       box-shadow: 0 1px 5px rgba(0,0,0,.08);
       border-left: 5px solid var(--muted);
@@ -181,7 +195,6 @@
       line-height: 1.65;
     }
 
-    /* ── Footer ── */
     .footer {
       padding: 24px 40px;
       border-top: 1px solid var(--mid);
@@ -190,128 +203,169 @@
       text-align: center;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       .header { padding: 28px 24px 22px; }
-      .body   { padding: 24px 24px 40px; }
-      .card-grid { grid-template-columns: 1fr; }
+      .header-top {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .header h1 { font-size: 21px; }
+      .body { padding: 24px 24px 40px; }
+      .list-link {
+        grid-template-columns: 6px minmax(0, 1fr);
+        padding-right: 16px;
+      }
+      .link-tag {
+        grid-column: 2;
+        margin-top: 2px;
+      }
       .footer { padding: 20px 24px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ── Header ── -->
   <div class="header">
     <div class="header-top">
       <span class="badge">OpenClaw</span>
       <h1>https://github.com/fahmiamni/github.io</h1>
     </div>
-    <div class="header-meta">Auto-generated dashboards &amp; reports — powered by OpenClaw 🦉</div>
+    <div class="header-meta">Auto-generated dashboards &amp; reports - powered by OpenClaw</div>
   </div>
 
-  <!-- ── Main ── -->
   <div class="body">
 
-    <!-- ═══ OIL & GAS ═══ -->
     <div class="category">
       <div class="cat-header">
-        <span class="cat-icon">🛢️</span>
+        <span class="cat-icon">O&amp;G</span>
         <span class="cat-title">Oil &amp; Gas</span>
         <span class="cat-count">2 reports</span>
       </div>
-      <div class="card-grid">
-        <a class="card accent-green" href="iraq_2026_growth.html">
-          <div class="card-title">Iraq 2026 Growth Opportunities</div>
-          <div class="card-desc">26 oil &amp; gas fields/blocks — full asset register with reserves, production rates, operators, pipeline distances, and PCIHBV assessments.</div>
-          <div class="card-tag">Oil &amp; Gas</div>
-        </a>
-        <a class="card accent-green" href="petronas_top5_analysis.html">
-          <div class="card-title">Petronas Iraq — Top 5 Field Recommendations</div>
-          <div class="card-desc">Detailed analysis for Petronas Carigali: Nasiriyah, Subba, Akkas, Haifa &amp; Ballad scored on HC evacuation, security, energy demand, HC volume, and H2S risk.</div>
-          <div class="card-tag">Strategic Analysis</div>
-        </a>
-      </div>
+      <ul class="link-list">
+        <li>
+          <a class="list-link accent-green" href="iraq_2026_growth.html">
+            <span class="link-main">
+              <span class="link-title">Iraq 2026 Growth Opportunities</span>
+              <span class="link-desc">26 oil &amp; gas fields/blocks - full asset register with reserves, production rates, operators, pipeline distances, and PCIHBV assessments.</span>
+            </span>
+            <span class="link-tag">Oil &amp; Gas</span>
+          </a>
+        </li>
+        <li>
+          <a class="list-link accent-green" href="petronas_top5_analysis.html">
+            <span class="link-main">
+              <span class="link-title">Petronas Iraq - Top 5 Field Recommendations</span>
+              <span class="link-desc">Detailed analysis for Petronas Carigali: Nasiriyah, Subba, Akkas, Haifa &amp; Ballad scored on HC evacuation, security, energy demand, HC volume, and H2S risk.</span>
+            </span>
+            <span class="link-tag">Strategic Analysis</span>
+          </a>
+        </li>
+      </ul>
     </div>
 
-    <!-- ═══ DRILLING & REPORTS ═══ -->
     <div class="category">
       <div class="cat-header">
-        <span class="cat-icon">📋</span>
+        <span class="cat-icon">DMR</span>
         <span class="cat-title">Drilling &amp; Reports</span>
         <span class="cat-count">2 reports</span>
       </div>
-      <div class="card-grid">
-        <a class="card accent-green" href="DMR11_Ga-C185P_ZPEC.html">
-          <div class="card-title">DMR 11 — Ga-C185P (ZPEC-29)</div>
-          <div class="card-desc">Daily Move Report for Rig ZPEC-29 at WPC Slot #16, Garraf Oilfield. Rig move from WPH to WPC — 03 May 2026.</div>
-          <div class="card-tag">DMR Report</div>
-        </a>
-        <a class="card accent-amber" href="Test_Daily_Update.html">
-          <div class="card-title">Test — Daily Update</div>
-          <div class="card-desc">Daily operational summary and status highlights.</div>
-          <div class="card-tag">Daily Update</div>
-        </a>
-      </div>
+      <ul class="link-list">
+        <li>
+          <a class="list-link accent-green" href="DMR11_Ga-C185P_ZPEC.html">
+            <span class="link-main">
+              <span class="link-title">DMR 11 - Ga-C185P (ZPEC-29)</span>
+              <span class="link-desc">Daily Move Report for Rig ZPEC-29 at WPC Slot #16, Garraf Oilfield. Rig move from WPH to WPC - 03 May 2026.</span>
+            </span>
+            <span class="link-tag">DMR Report</span>
+          </a>
+        </li>
+        <li>
+          <a class="list-link accent-amber" href="Test_Daily_Update.html">
+            <span class="link-main">
+              <span class="link-title">Test - Daily Update</span>
+              <span class="link-desc">Daily operational summary and status highlights.</span>
+            </span>
+            <span class="link-tag">Daily Update</span>
+          </a>
+        </li>
+      </ul>
     </div>
 
-    <!-- ═══ HR & DOCUMENTS ═══ -->
     <div class="category">
       <div class="cat-header">
-        <span class="cat-icon">📄</span>
+        <span class="cat-icon">HR</span>
         <span class="cat-title">HR &amp; Documents</span>
         <span class="cat-count">2 reports</span>
       </div>
-      <div class="card-grid">
-        <a class="card accent-purple" href="Tamilarasan_Employment_Details.html">
-          <div class="card-title">Tamilarasan — Employment Details</div>
-          <div class="card-desc">Letter of Appointment as Event Director at XR-Summits Sdn Bhd. Covers salary, commission, leave, benefits, notice period &amp; obligations.</div>
-          <div class="card-tag">HR Document</div>
-        </a>
-        <a class="card" href="md_ikhlas_profile.html">
-          <div class="card-title">MD Ikhlas — Profile</div>
-          <div class="card-desc">Profile summary and details.</div>
-          <div class="card-tag">Profile</div>
-        </a>
-      </div>
+      <ul class="link-list">
+        <li>
+          <a class="list-link accent-purple" href="Tamilarasan_Employment_Details.html">
+            <span class="link-main">
+              <span class="link-title">Tamilarasan - Employment Details</span>
+              <span class="link-desc">Letter of Appointment as Event Director at XR-Summits Sdn Bhd. Covers salary, commission, leave, benefits, notice period &amp; obligations.</span>
+            </span>
+            <span class="link-tag">HR Document</span>
+          </a>
+        </li>
+        <li>
+          <a class="list-link" href="md_ikhlas_profile.html">
+            <span class="link-main">
+              <span class="link-title">MD Ikhlas - Profile</span>
+              <span class="link-desc">Profile summary and details.</span>
+            </span>
+            <span class="link-tag">Profile</span>
+          </a>
+        </li>
+      </ul>
     </div>
 
-    <!-- ═══ AI & GITHUB STATS ═══ -->
     <div class="category">
       <div class="cat-header">
-        <span class="cat-icon">🤖</span>
+        <span class="cat-icon">AI</span>
         <span class="cat-title">AI &amp; GitHub Stats</span>
         <span class="cat-count">3 reports</span>
       </div>
-      <div class="card-grid">
-        <a class="card accent-oc" href="hermes_agent_vs_openclaw.html">
-          <div class="card-title">Hermes Agent vs OpenClaw — AI Agent Stars</div>
-          <div class="card-desc">Live GitHub comparison: OpenClaw (369K ★) vs Hermes Agent/NousResearch (138K ★) — bar charts, donut, growth rate, and full metrics table.</div>
-          <div class="card-tag">AI Agents</div>
-        </a>
-        <a class="card accent-oc" href="hermes_agent_vs_openclaw_growth.html">
-          <div class="card-title">Star Growth Trajectory — Chart</div>
-          <div class="card-desc">Cumulative growth curves from inception: OpenClaw vs Hermes Agent — modeled star trajectory, milestone timeline, and growth rate analysis.</div>
-          <div class="card-tag">Growth Chart</div>
-        </a>
-        <a class="card" href="hermes_vs_openclaw.html">
-          <div class="card-title">Hermes vs OpenClaw — Full Comparison</div>
-          <div class="card-desc">Detailed side-by-side GitHub metrics: stars, forks, watchers, contributors, commit frequency, and community activity.</div>
-          <div class="card-tag">AI Agents</div>
-        </a>
-      </div>
+      <ul class="link-list">
+        <li>
+          <a class="list-link accent-oc" href="hermes_agent_vs_openclaw.html">
+            <span class="link-main">
+              <span class="link-title">Hermes Agent vs OpenClaw - AI Agent Stars</span>
+              <span class="link-desc">Live GitHub comparison: OpenClaw (369K stars) vs Hermes Agent/NousResearch (138K stars) - bar charts, donut, growth rate, and full metrics table.</span>
+            </span>
+            <span class="link-tag">AI Agents</span>
+          </a>
+        </li>
+        <li>
+          <a class="list-link accent-oc" href="hermes_agent_vs_openclaw_growth.html">
+            <span class="link-main">
+              <span class="link-title">Star Growth Trajectory - Chart</span>
+              <span class="link-desc">Cumulative growth curves from inception: OpenClaw vs Hermes Agent - modeled star trajectory, milestone timeline, and growth rate analysis.</span>
+            </span>
+            <span class="link-tag">Growth Chart</span>
+          </a>
+        </li>
+        <li>
+          <a class="list-link" href="hermes_vs_openclaw.html">
+            <span class="link-main">
+              <span class="link-title">Hermes vs OpenClaw - Full Comparison</span>
+              <span class="link-desc">Detailed side-by-side GitHub metrics: stars, forks, watchers, contributors, commit frequency, and community activity.</span>
+            </span>
+            <span class="link-tag">AI Agents</span>
+          </a>
+        </li>
+      </ul>
     </div>
 
-    <!-- ── About ── -->
     <div class="about">
       <h2>About This Site</h2>
-      <p>This site is automatically maintained by <strong>OpenClaw</strong> 🦉. Reports and dashboards are generated on demand and published here. Categories are auto-grouped. To improve this page, edit <code>index.html</code> in the repository.</p>
+      <p>This site is automatically maintained by <strong>OpenClaw</strong>. Reports and dashboards are generated on demand and published here. Categories are auto-grouped. To improve this page, edit <code>index_v1.html</code> in the repository.</p>
     </div>
 
   </div>
 
-  <!-- ── Footer ── -->
   <div class="footer">
-    fambopenclaw-hash.github.io &mdash; OpenClaw Auto Website &mdash;
+    fambopenclaw-hash.github.io - OpenClaw Auto Website -
     <a href="https://github.com/fambopenclaw-hash/fambopenclaw-hash.github.io" style="color:var(--blue);">View on GitHub</a>
   </div>
 
